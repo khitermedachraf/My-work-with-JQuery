@@ -1,0 +1,293 @@
+<!--
+ *  ========================================
+ *  | Project name:    jQuery ToDoList     |
+ *  | Version:         1.0.2               |
+ *  | Created by:      khiter              |
+ *  | Creation date:   April 28, 2018      |
+ *  | Last update:     April 29, 2020      |
+ *  ========================================
+ * 
+ * Features:
+ *  Add an item to the list by clicking +
+ *  Check a task by clicking on it
+ *  Edit a task by clicking on the pencil
+ *  Remove a task by clicking on the bin
+ * 
+ * Last update:
+ *  Auto hide/show input by clicking +
+ *  Desactivate the line-throught when the 
+ *  content is editable
+ -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>jQuery ToDo List with french explanation</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+        body {
+            text-align: center;
+        }
+        
+        .box-container {
+            margin: 100px 0;
+            height: 400px;
+            width: 300px;
+            display: inline-block;
+            position: relative;
+            border: 1px solid #444;
+        }
+        
+        .header {
+            background-color: #2980b9;
+            text-transform: uppercase;
+            color: #fff;
+            padding: 10px;
+            font-size: 24px;
+            font-weight: 400;
+        }
+        
+        h4 {
+            margin-right: 80px;
+            display: inline-block;
+        }
+        
+        #confirm,
+        .btn {
+            padding: 3px 4px;
+            color: #fff;
+            background-color: #82c8a0;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .btn {
+            background-color: #2980b9;
+            font-size: 22px;
+            margin-top: -10px;
+        }
+        
+        input {
+            font-size: 18px;
+            color: #2980b9;
+            background-color: #f7f7f7;
+            width: 100%;
+            padding: 13px 13px 13px 20px;
+            box-sizing: border-box;
+            border: 3px solid rgba(0, 0, 0, 0);
+            outline: 0 none;
+        }
+        
+        ul {
+            width: 100%;
+            padding-left: 0;
+            display: inline-block;
+            list-style: none;
+        }
+        
+        li {
+            width: 100%;
+            position: relative;
+            text-align: left;
+            padding-left: 17px;
+            color: #444;
+            font-size: 16px;
+            height: 40px;
+            line-height: 40px;
+        }
+        
+        a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .editable {
+            border: 1px solid #444;
+            padding: 7px 5px;
+            background-color: #fff;
+        }
+        
+        li:hover .delete {
+            width: 50px;
+            opacity: 1;
+        }
+        
+        li:hover .edit {
+            width: 50px;
+            opacity: 1;
+        }
+        
+        .delete,
+        .edit {
+            opacity: 0;
+            width: 0;
+            color: #fff;
+            height: 40px;
+            text-align: center;
+            display: inline-block;
+            transition: 0.2s linear;
+        }
+        
+        .delete {
+            background-color: #e74c3c;
+        }
+        
+        .edit {
+            background-color: #82c8a0;
+            margin-right: -4px;
+        }
+        
+        i {
+            color: #fff;
+            margin-top: 11px;
+        }
+        
+        li:nth-child(2n) {
+            background-color: #f7f7f7;
+        }
+        
+        .checked {
+            text-decoration: line-through;
+            color: #808080;
+        }
+        
+        .button-container {
+            float: right;
+        }
+        
+        .message {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: red;
+            font-size: 11px;
+            font-style: italic;
+        }
+        
+        .bottom {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%);
+            width: 100%;
+        }
+        
+        #confirm {
+            height: 50px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content content-section-6">
+        <div class="box-container">
+            <div class="header">
+                <h4>ToDo List</h4>
+                <button class="btn"><i class="fas fa-plus"></i></button>
+            </div>
+            <input type="text" id="inputToDoList" placeholder="Add item" />
+            <ul id="toDoList">
+                <li><span contenteditable="false">Learn JavaScript</span>
+                    <div class='button-container hidden'><a href='#' class='edit'><i class='far fa-edit '></i></a><a href='#' class='delete'><i class='fas fa-trash'></i></a></div>
+                </li>
+                <li><span contenteditable="false">Learn jQuery</span>
+                    <div class='button-container hidden'><a href='#' class='edit'><i class='far fa-edit '></i></a><a href='#' class='delete'><i class='fas fa-trash'></i></a></div>
+                </li>
+            </ul>
+            <div class="bottom">
+                <button id="confirm">OK<i class="fas fa-check-circle"></i></button>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+
+            // Lorsque l'on clique sur le bouton d'ajout des items
+            $(".btn").on("click", function() {
+
+                // On met la valeur de l'input dans la variable value
+                var value = $("#inputToDoList").val();
+
+                // Si l'input est rempli 
+                if (value !== "") {
+                    // On ajoute le nouvel item à la suite de notre toDoList en prenant la valeur de l'input 
+                    // On y ajoute a la suite les boutons d'édition et de supression
+                    $("#toDoList").append('<li><span contenteditable="false">' + value + " </span><div class='button-container hidden'><a href='#' class='edit'>" + "<i class='far fa-edit '></i></a>" + " <a href='#' class='delete'>" + "<i class='fas fa-trash'></i></a></div></li>");
+                    // On vide le champ de l'input
+                    $("#inputToDoList").val("");
+
+                    // Si l'input est vide
+                } else {
+                    // Montre ou cache l'input
+                    $("#inputToDoList").slideToggle();
+                }
+            });
+
+            // Lorsque l'on clique sur une li
+            $("ul").on("click", "li", function() {
+                // On parcoure le DOM à la recherche du parent li et du contenu de la balise span pour créer la variable item
+                var item = $(this).closest("li").find("span");
+                // On verifie que l'item ne soit pas en mode édition
+                if (item.attr("contentEditable") == "false") {
+                    // On toggle la classe checked qui barre la li
+                    $(this).toggleClass("checked");
+                }
+            });
+
+            // Quand on clique sur le bouton edit
+            $(document).on("click", ".edit", function() {
+                // On parcoure le DOM à la recherche du parent li et du contenu de la balise span pour créer la variable item
+                var item = $(this).closest("li").find("span");
+                // On rend l'item éditable
+                item.prop("contenteditable", true);
+                // On enleve la barre sur la li pendant l'édition
+                $("li").removeClass("checked");
+                // On ajoute un contour à la ligne en question
+                $(item).addClass("editable");
+                // On masque le bouton edit et delete
+                $(".edit, .delete").hide();
+                // Pour laisser place au bouton de confirmation
+                $("#confirm").slideDown();
+
+                // Quand on clique sur le bouton de confirmation
+                $("#confirm").on("click", function() {
+                        // On rend la balise span non éditable
+                        $("span").attr("contenteditable", false);
+
+                        // On fait réaparaitre le bouton d'édition et de suppression
+                        $(".edit, .delete").show();
+                        // Et on cache celui de confirmation
+                        $("#confirm").slideUp();
+                        // On enleve le contour de la ligne en question
+                        $(item).removeClass("editable");
+                    })
+                    // Désactive le href sur la balise <a>
+                return false;
+            });
+
+            // Quand on clique sur le bouton delete
+            $(document).on("click", ".delete", function() {
+                // On supprime la ligne li avec un effet de disparition
+                $(this).closest("li").fadeOut("slow", function() {
+                    // Supression 
+                    $(this).remove();
+                });
+                // Désactive le href sur la balise <a>
+                return false;
+            });
+
+            // Bouton confirmation masqué par défaut
+            $("#confirm").hide();
+            // Input caché par défaut
+            $("#inputToDoList").hide();
+        });
+    </script>
+</body>
+
+</html>
